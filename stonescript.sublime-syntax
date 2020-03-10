@@ -81,6 +81,7 @@ contexts:
       scope: markup.underline.link
       captures:
         1: user_classes
+        2: user_class_attributes
 
   output_basic:
     - match: '^>`?'
