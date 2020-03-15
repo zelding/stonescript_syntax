@@ -43,6 +43,8 @@ contexts:
   operators:
     - match: '\s(&|\||>|<|>=|<=|=|\^)\s'
       scope: keyword.operator
+    - match: '\b((?<=\w)\s?(\+\+|--|\*\*))'
+      scope: keyword.operator
 
   control:
     - match: '(\?|:\?|:)'
