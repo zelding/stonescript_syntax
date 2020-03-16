@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 %YAML 1.2
 ---
 # See http://www.sublimetext.com/docs/3/syntax.html
@@ -155,3 +156,162 @@ contexts:
         - meta_scope: comment.line.double-slash
         - match: $\n?
           pop: true
+=======
+%YAML 1.2
+---
+# See http://www.sublimetext.com/docs/3/syntax.html
+file_extensions:
+  - txt
+first_line_match: '//stonescript'
+scope: text.plain
+
+contexts:
+  # The prototype context is prepended to all contexts but those setting
+  # meta_include_prototype: false.
+  prototype:
+    - include: comments
+
+  main:
+    # The main context is the initial starting point of our syntax.
+    # Include other contexts from here (or specify them directly).
+    - include: keywords
+    - include: numbers
+    - include: strings
+    - include: hex_colours
+    - include: heredoc_string
+    - include: operators
+    - include: global_functions
+    - include: global_variables
+    - include: attributes
+    - include: classes
+    - include: user_classes
+    - include: user_class_attributes
+    - include: control
+    - include: funtion_call
+    - include: variable_reference
+    - include: output_basic
+
+  global_functions:
+    - match: '\b(rng|equip|equipL|equipR|activate|loadout)\b'
+      scope: variable.function
+
+  global_variables:
+    - match: '\b(time|hp|maxhp|maxarmor|totaltime|face|key)\b'
+      scope: variable.language
+
+  operators:
+    - match: '\s(&|\||>|<|>=|<=|=|\^)\s'
+      scope: keyword.operator
+    - match: '\b((?<=\w)\s?(\+\+|--|\*\*))'
+      scope: keyword.operator
+
+  control:
+    - match: '(\?|:\?|:)'
+      scope: keyword.operator
+
+  classes:
+    - match: '\b(loc|foe|pos|debuffs|harvest|pickup|ai|screen|armor)\b'
+      scope: support.class
+
+  user_classes:
+    - match: '(?=\w+\.)\w+'
+      scope: entity.other.attribute-name
+
+  attributes:
+    - match: '\b(distance|count|(?<=screen\.[xyz])\w)\b'
+      scope: support.class
+
+  user_class_attributes:
+    - match: '(?<=\.)\w+'
+      scope: entity.other.attribute-name
+
+  funtion_call:
+    - meta_include_prototype: false
+    - match: '(?=\w+\()\w+'
+      scope: variable.function
+      push: function_params
+
+  function_params:
+    - match: '[\w_]'
+      scope: variable.parameter
+    - match: '\)'
+      pop: true
+
+  variable_reference:
+    - match: '@(\w+)@'
+      scope: markup.underline.link
+      captures:
+        1: user_classes
+        2: user_class_attributes
+
+  output_basic:
+    - match: '^>`?'
+      scope: variable.parameter
+
+  keywords:
+    # Keywords are if, else for and while.
+    # Note that blackslashes don't need to be escaped within single quoted
+    # strings in YAML. When using single quoted strings, only single quotes
+    # need to be escaped: this is done by using two single quotes next to each
+    # other.
+    - match: '\b(var|import|func|for|new|return)\b'
+      scope: keyword
+    - match: '\b(disable|enable)\s(hud|player|loadout print)\b'
+      scope: keyword
+
+  numbers:
+    - match: '\b(-)?[0-9.]+\b'
+      scope: constant.numeric
+
+  hex_colours:
+    - match: '#[0-9a-fA-F]{6}|#red|#white|#cyan|#yellow|#green|#blue|#rain[0-9a-fA-F]{2}'
+      scope: markup.list.numbered.bullet
+
+  strings:
+    # Strings begin and end with quotes, and use backslashes as an escape
+    # character.
+    - match: '"'
+      scope: punctuation.definition.string.begin
+      push: inside_string
+
+  inside_string:
+    - meta_include_prototype: false
+    - meta_scope: string.quoted.double
+    - match: '\\n'
+      scope: string.unquoted.yaml
+    - match: '#'
+      scope: comment
+    - match: '\^'
+      scope: keyword
+    - match: '"'
+      scope: punctuation.definition.string.end
+      pop: true
+
+  heredoc_string:
+    - meta_include_prototype: false
+    - meta_scope: string.quoted.double
+    - match: '\bascii$'
+      scope: markup.italic markup.bold
+      push: inside_heredoc
+
+  inside_heredoc:
+    - meta_include_prototype: false
+    - meta_scope: string.quoted.double
+    - match: '#'
+      scope: comment
+    - match: '\^'
+      scope: keyword
+    - match: '\basciiend$'
+      scope: punctuation.definition.string.end
+      pop: true
+
+  comments:
+    # Comments begin with a '//' and finish at the end of the line.
+    - match: '//'
+      scope: punctuation.definition.comment
+      push:
+        # This is an anonymous context push for brevity.
+        - meta_scope: comment.line.double-slash
+        - match: $\n?
+          pop: true
+>>>>>>> init
