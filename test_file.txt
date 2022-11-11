@@ -1,0 +1,176 @@
+//stonescript
+
+>f4,23,#4af55b,Asd FSD @item.left.id@
+>c4,23,#4af55b,Asd FSD @item.left.id@
+>`4,23,#4af55b,Asd FSD @item.left.id@
+>o4,23,#4af55b,Asd FSD @item.left.id@
+
+>hasjdghahdsasd
+>(#546da3,askdjhaksjdhasd
+
+// Equips the Shovel for Rocky Plateau.
+// In Caves of Fear it equips loadout 1,
+// except against the boss, where the
+// Grappling Hook and a 7 star War Hammer
+// are used instead.
+// For Haunted Halls it uses two Wands,
+// specifying Poison for left hand and
+// Vigor for the right hand. However,
+// if the difficulty is over 5 stars it
+// uses an enchanted +13 Vigor Staff.
+// Potion activates if hitpoints fall
+// below 10
+?loc.destinations = asd
+  activate potion
+
+?loc.isQuest = 1
+  brew molly vini
+
+?loc=rocky
+ equip shovel
+?loc=cave
+ loadout 1
+ equipR ice wand aP 8*
+ ?foe=bolesh
+  equip grap
+  equip hammer D 7*
+?loc.stars > 5
+  equip vigor staff 13+
+?loc=halls
+ equipL poison wand
+ equipR vigor wand ai 4-
+
+?hp < 10
+ activate potion
+
+?loc.name = "asdasd"
+  out.asd
+
+foe.debuffs.count < 34
+  asdasd
+
+?loc.id=loc.bestTime
+  activate potion
+
+?foe.armor < 456
+  activate potion
+
+?foe.name == foe.hp
+  activate potion
+
+?foe.asdasd.count
+  activate potion
+
+?foe.asd = 67
+  activate potion
+
+?foe.buffs.count > 1
+  activate potion
+
+?foe.buffs.string > 1
+  activate potion
+
+?foe.buffs.strings > 1
+  activate potion
+
+#aa44dd
+#cyan
+#yellaw
+#rain54
+#red
+
+func quarterstaff()
+  ?item.GetCooldown("quarterstaff") = 0
+    equipL quarter staff
+    activate R
+
+
+
+?loc.name = "asdasd"
+
+hp
+time
+
+?item.hand <> 32
+  activate potion f
+
+?item.left
+  activate potion
+
+?item.left.id= knife
+  activate R au
+
+?item.potion = 1
+  activate potion
+
+import Garage\Poppy
+
+var asd = asd
+
+var fsd = new Data\DClass
+
+func asd(asdasd) 
+  >@asdasd.msg@
+
+asd(12, fff, ff.gg)
+  equip shovel =6 a
+
+ascii
+asdasdasdasd
+asd  d   a
+asd sd  d @asd.fds@
+asd   a da
+asd @das@ sd
+asd
+asciiend
+
+screen.x
+
+?harvest.distance < 54
+  equip fire shovel dL
+  >f4,23,#4af55b,Asd FSD @item.left.id@
+  >cAsd FSD@item.left.id@
+  >`4,23,Asd FSD@item.left.id@
+  >o#4af55b,Asd FSD @item.left.id@
+
+?pickup.distance > 12
+ equip shovel dF
+
+?armor.f = 3
+  equip shovel ah 2~
+
+?armor.sdf != asd
+  equip ice shovel A
+
+time & pos.x
+
+?armor.f = 3 | res.ki > 4
+  equip shovel
+
+?armor < 4 & loc.name = asd
+  equip aether shovel
+
+?armor.string === asd
+  equip shovel au 1+ 
+
+?maxarmor < 10 & ai.walking
+  activate R
+
+?armor.f = 3
+  equipL shovel 3* dP
+  equipR ice staff D 10*
+
+?foe ! spawner
+ var spawnerCount = 0
+?foe = spawner & loc = icy_ridge & spawnerCount = 0
+ spawnerCount = foe.count
+ WeapMele() // Your normal attack
+:?foe = spawner & loc = icy_ridge & foe.count > spawnerCount
+ spawnerTime = time
+ equip @bardiche@
+:?time < spawnerTime + 26
+ equip @bardiche@
+
+?foe.distance < 17 & foe.distance > 10
+ equipL big vigor sword
+ equipR dashing shield

@@ -3,6 +3,8 @@
 # See http://www.sublimetext.com/docs/3/syntax.html
 file_extensions:
   - txt
+  - ss
+  - ''
 first_line_match: '//stonescript'
 scope: text.plain
 
@@ -18,76 +20,133 @@ contexts:
     - include: keywords
     - include: numbers
     - include: strings
-    - include: hex_colours
     - include: heredoc_string
     - include: operators
-    - include: global_functions
     - include: global_variables
     - include: attributes
-    - include: classes
-    - include: user_classes
-    - include: user_class_attributes
     - include: control
-    - include: funtion_call
-    - include: variable_reference
     - include: output_basic
+    - include: funtion_call
 
-  global_functions:
-    - match: '\b(rng|equip|equipL|equipR|activate|loadout)\b'
-      scope: variable.function
+    - include: game_actions
+
+    - include: loc
+    - include: foe
+    - include: item
+    - include: harvest_pickup
+    - include: armor
 
   global_variables:
     - match: '\b(time|hp|maxhp|maxarmor|totaltime|face|key)\b'
-      scope: variable.language
+      scope: entity.name.class
+    - match: '\b(ai)\.(enabled|paused|idle|walking)\b'
+      captures:
+        1: entity.name.class
+        2: entity.other.attribute-name
+    - match: '\b(pos)\.([xyz])\b'
+      captures:
+        1: entity.name.class
+        2: entity.other.attribute-name
+    - match: '\b(res)\.(stone|wood|tar|ki|bronze|crystals)\b'
+      captures:
+        1: entity.name.class
+        2: entity.other.attribute-name
+
+  game_actions:
+    - match: '\b(rng|loadout)\b'
+      scope: variable.function
+    - match: '\b(equip[LR]?|brew|activate)\b'
+      scope: variable.function
+      push:
+        - match: '\b(potion|active|R)\b'
+          scope: variable.parameter
+          pop: true
+        - match: '\b(big|vigor|poison|ice|fire|aether)\b'
+          scope: markup.underline.link
+        - match: '\b(sword|hammer|staff|wand|shovel|bow|axe|grap|dashing shield|crossbow)\b'
+          scope: variable.parameter
+          push:
+            - match: '\d+[\*\+\-~]?'
+              scope: constant.other
+            - match: '\b(D|dp|dP|dh|dL|du|dU|df|dF|di|dI|A|ap|aP|ah|aL|au|aU|af|aF|ai|aI)\b'
+              scope: constant.other
+            - match: '^\0'
+              pop: true
+        - match: '(molly)\s?(vini)\b'
+          captures:
+            1: markup.underline.link
+            2: variable.parameter
+        - match: '^\0'
+          pop: true
 
   operators:
-    - match: '\s(&|\||>|<|>=|<=|=|\^)\s'
+    - match: '\s*(&|\||<|>=|<=|=|\^|\!|\!=)\s*'
       scope: keyword.operator
-    - match: '\b((?<=\w)\s?(\+\+|--|\*\*))'
+      pop: true
+    - match: '((?<=\w)\s?(\+\+|--|\*\*))'
       scope: keyword.operator
+      pop: true
 
   control:
     - match: '(\?|:\?|:)'
-      scope: keyword.operator
-
-  classes:
-    - match: '\b(loc|foe|pos|debuffs|harvest|pickup|ai|screen|armor)\b'
-      scope: support.class
-
-  user_classes:
-    - match: '(?=\w+\.)\w+'
-      scope: entity.other.attribute-name
-
-  attributes:
-    - match: '\b(distance|count|(?<=screen\.[xyz])\w)\b'
-      scope: support.class
-
-  user_class_attributes:
-    - match: '(?<=\.)\w+'
-      scope: entity.other.attribute-name
+      scope: keyword.control.c
+      pop: true
+    - match: '\b(var|func|for|return)\b'
+      scope: variable.language.plain
+    - match: '\b(new|import)\b'
+      scope: variable.language.plain
+      push:
+        - match: '(\w+)\\?'
+          scope: markup.underline.link
+        - match: '\n'
+          pop: true
 
   funtion_call:
-    - meta_include_prototype: false
-    - match: '(?=\w+\()\w+'
-      scope: variable.function
-      push: function_params
-
-  function_params:
-    - match: '[\w_]'
-      scope: variable.parameter
-    - match: '\)'
-      pop: true
+    - match: '(\w+)\('
+      captures:
+        1: variable.function
+      push:
+        - include: strings
+        - match: '[\w_]+'
+          scope: variable.parameter
+        - match: '\)'
+          pop: true
 
   variable_reference:
-    - match: '@(\w+)@'
-      scope: markup.underline.link
-      captures:
-        1: user_classes
-        2: user_class_attributes
+    - meta_include_prototype: false
+    - match: '@'
+      scope: variable.function
+      push:
+        - match: '(\w+)\.?'
+          scope: variable.function
+        - match: '@'
+          scope: variable.function
+          pop: true
 
   output_basic:
-    - match: '^>`?'
-      scope: variable.parameter
+    - meta_include_prototype: false
+    - match: '>[`ohcf\(]?'
+      scope: variable.language.plain
+      push:
+        - match: '\n'
+          scope: punctuation.definition.string.end
+          pop: true
+        - match: '(\d+),(\d+),'
+          captures:
+            1: constant.numeric
+            2: constant.numeric
+        - include: hex_colours
+        - include: variable_reference
+        - match: ',?(?=.*)\n'
+          push:
+            - meta_include_prototype: false
+            - meta_scope: string.quoted.double
+            - match: '\n'
+              scope: punctuation.definition.string.end
+              pop: 2
+            - match: '\w+'
+              scope: string.quoted.double
+
 
   keywords:
     # Keywords are if, else for and while.
@@ -95,24 +154,24 @@ contexts:
     # strings in YAML. When using single quoted strings, only single quotes
     # need to be escaped: this is done by using two single quotes next to each
     # other.
-    - match: '\b(var|import|func|for|new|return)\b'
-      scope: keyword
     - match: '\b(disable|enable)\s(hud|player|loadout print)\b'
-      scope: keyword
+      scope: keyword.other
 
   numbers:
+    - meta_include_prototype: false
     - match: '\b(-)?[0-9.]+\b'
       scope: constant.numeric
     - match: '\b(true|false)\b'
       scope: constant.numeric
 
   hex_colours:
-    - match: '(#[0-9a-fA-F]{6})'
-      scope: markup.list.numbered.bullet
-    - match: '(#red|#white|#cyan|#yellow|#green|#blue)'
-      scope: markup.list.numbered.bullet
-    - match: '(#rain[0-9a-fA-F]{2})'
-      scope: markup.list.numbered.bullet
+    - meta_include_prototype: false
+    - match: '(#[0-9a-fA-F]{6})\b'
+      scope: constant.other.array.rgb
+    - match: '(#red|#white|#cyan|#yellow|#green|#blue)\b'
+      scope: constant.other.array.rgb
+    - match: '(#rain[0-9a-fA-F]{2})\b'
+      scope: constant.other.array.hex
 
   strings:
     # Strings begin and end with quotes, and use backslashes as an escape
@@ -120,44 +179,121 @@ contexts:
     - match: '"'
       scope: punctuation.definition.string.begin
       push: inside_string
-
   inside_string:
+    - include: variable_reference
+    - include: hex_colours
     - meta_include_prototype: false
     - meta_scope: string.quoted.double
-    - match: '\\n'
-      scope: string.unquoted.yaml
-    - match: '#'
-      scope: comment
-    - match: '\^'
-      scope: keyword
     - match: '"'
       scope: punctuation.definition.string.end
       pop: true
+    - match: '\\n'
+      scope: string.unquoted.yaml
+    - match: '#'
+      scope: punctuation.definition.comment
+      push: comment
+    - match: '\^'
+      scope: keyword
 
   heredoc_string:
     - meta_include_prototype: false
     - meta_scope: string.quoted.double
     - match: '\bascii$'
-      scope: markup.italic markup.bold
+      scope: punctuation.definition.string.begin
       push: inside_heredoc
-
   inside_heredoc:
+    - include: variable_reference
+    - include: hex_colours
     - meta_include_prototype: false
     - meta_scope: string.quoted.double
-    - match: '#'
-      scope: comment
-    - match: '\^'
-      scope: keyword
     - match: '\basciiend$'
       scope: punctuation.definition.string.end
       pop: true
+    - match: '#'
+      scope: punctuation.definition.comment
+      push: comment
+    - match: '\^'
+      scope: keyword
+
+  comment:
+    - meta_scope: comment.line.double-slash
+    - match: $\n?
+      pop: true
 
   comments:
+    - meta_include_prototype: false
     # Comments begin with a '//' and finish at the end of the line.
     - match: '//'
       scope: punctuation.definition.comment
+      push: comment
+
+  loc:
+    - match: '\b(loc)\s?([\!<=]?[=>]?)?\s?(rocky|deadwood|cave|halls|shroom|haunted|crypt|bronze|icy|temple|nagaraja|icy_ridge)\b'
+      captures:
+        1: entity.name.class
+        2: keyword.operator
+        3: variable.parameter
+    - match: '\bloc(?=\.)'
+      scope: entity.name.class
       push:
-        # This is an anonymous context push for brevity.
-        - meta_scope: comment.line.double-slash
-        - match: $\n?
+        - match: '\.(id|name|stars|begin|loop|isQuest|averageTime|bestTime)\b'
+          scope: entity.other.attribute-name
           pop: true
+        - match: ''
+          pop: true
+    - match: '\bloc\b'
+      scope: entity.name.class
+
+  foe:
+    - match: '\bfoe(?=\.)'
+      scope: entity.name.class
+      push:
+        - match: '\.(buffs|debuffs)\.(count|string)\b'
+          captures:
+            1: entity.other.attribute-name
+            2: entity.other.attribute-name
+          pop: true
+        - match: '\.(name|damage|buffs|debuffs|distance|count|hp|maxhp|armor|maxarmor|state|time|level)\b'
+          scope: entity.other.attribute-name
+          pop: true
+        - match: ''
+          pop: true
+    - match: '\bfoe\b'
+      scope: entity.name.class
+
+  item:
+    - match: '\bitem(?=\.)'
+      scope: entity.name.class
+      push:
+        - match: 'GetCooldown'
+          scope: invalid.illegal
+        - match: '\.(left|right)\.(id|name)\b'
+          captures:
+            1: entity.other.attribute-name
+            2: entity.other.attribute-name
+          pop: true
+        - match: '\.(left|right|potion)\b'
+          scope: entity.other.attribute-name
+          pop: true
+        - match: ''
+          pop: true
+
+  harvest_pickup:
+    - match: '\b(harvest|pickup)\.(distance|count)\b'
+      captures:
+        1: entity.name.class
+        2: entity.other.attribute-name
+    - match: '\b(harvest|pickup)\b'
+      scope: entity.name.class
+
+  armor:
+    - match: '\b(armor)(?=\.)'
+      scope: entity.name.class
+      push:
+        - match: '\.(f|count|string)\b'
+          scope: entity.other.attribute-name
+          pop: true
+        - match: ''
+          pop: true
+    - match: '\b(armor)\b'
+      scope: entity.name.class
