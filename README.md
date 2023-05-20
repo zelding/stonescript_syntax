@@ -8,3 +8,4 @@ Unix default:
 
 Windows default:
 `C:\Users\<user>\AppData\Roaming\Sublime Text 3\Packages\User`
+(replace `<user>` with your username)
